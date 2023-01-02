@@ -42,7 +42,7 @@ const NewPost = () => {
         <form onSubmit={handleSubmit} encType='multipart/form-data'>
             <input 
                 type="file" 
-                accept=".png, .jpg, .jpeg"
+                accept=".png, .jpg, .jpeg, .mp4"
                 name="photo"
                 onChange={handlePhoto}
             />

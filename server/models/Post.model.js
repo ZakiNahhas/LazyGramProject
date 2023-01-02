@@ -13,7 +13,10 @@ const Post = new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:"UserSchema"
     },
-  
+  showCommand:{
+    type: Boolean,
+    default:false
+  }
         
 }, { timestamps: true });
 module.exports.Post = mongoose.model('Posts', Post);
