@@ -1,6 +1,8 @@
 import React from 'react'
+import InstagramPost from '../components/Card';
 import ListPosts from '../components/ListPosts';
 import ListProjects from '../components/ListProjects';
+import PrimarySearchAppBar from '../components/Navbar';
 import NewPost from '../components/NewPost';
 
 export const Main = () => {
@@ -8,11 +10,11 @@ export const Main = () => {
 
   return (
     <div>
+      <PrimarySearchAppBar/>
       {data?<h2>Welcome {data.user.firstName}</h2>:""}
-      <h1>LazyGram</h1>
        <NewPost/>
-       
-       <ListPosts/>
+       <InstagramPost />
+       {/* <ListPosts/> */}
 
     </div>
   )

@@ -1,5 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
+import PrimarySearchAppBar from './Navbar';
 
 const ListPosts = () => {
   const [posts, setPosts] = useState([]);
@@ -21,7 +22,6 @@ const ListPosts = () => {
       .then(res => setComments(res.data));
 
     setLoaded1(true)
-    console.log("sdzfz" + Comments)
   }, [Comments])
   const handleSubmit = (post_idx) => (e) => {
     e.preventDefault();
@@ -48,7 +48,6 @@ const ListPosts = () => {
 
   return (
     <div>
-
       {loaded && posts.map((post, idx) => {
         return (
           <>

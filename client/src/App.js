@@ -7,11 +7,11 @@ import RegForm from './components/RegForm';
 import CreateUser from './views/CreateUser';
 import RegisterForm from './components/RegisterForm';
 import Login from './views/Login';
+import PrimarySearchAppBar from './components/Navbar';
 
 function App() {
   return (
     <div className="App">
-      
       <Router>
             <RegisterForm path="/"/>
             <Login path="/login" />
