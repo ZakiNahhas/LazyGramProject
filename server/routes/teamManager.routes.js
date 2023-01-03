@@ -4,6 +4,7 @@ const PostCont = require('../controllers/Post.controllers');
 const CommentController = require('../controllers/Comment.controllers');
 
 const { authenticate } = require('../config/jwt.config');
+const { UserSchema } = require('../models/userSchema.model');
 
 const multer = require('multer');
 const { v4: uuidv4 } = require('uuid');
@@ -36,7 +37,13 @@ module.exports = function(app){
 
     app.get('/api/logout', UserCont.logout);
     app.post('/api/login', UserCont.loginUser);
+    app.get('/api/user/:id', UserCont.getUser);
+
     app.get("/api/users", authenticate, UserCont.getAllUsers);
+
+    app.put("/api/follow/:id", UserCont.follow);
+    app.put("/api/unfollow/:id", UserCont.unfollow);
+
 
 
 
@@ -59,5 +66,7 @@ module.exports = function(app){
     app.get('/api/Comment/:id', CommentController.getComment);
     app.put('/api/Comment/:id', CommentController.updateComment);
     app.delete('/api/Comment/:id', CommentController.deleteComment);
+
+    
 
 }
