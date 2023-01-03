@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 // import * as React from 'react';
 import axios from 'axios';
-
+import { format} from "date-fns";
 import AspectRatio from '@mui/joy/AspectRatio';
 import Avatar from '@mui/joy/Avatar';
 import Box from '@mui/joy/Box';
@@ -17,20 +17,44 @@ import ModeCommentOutlined from '@mui/icons-material/ModeCommentOutlined';
 import SendOutlined from '@mui/icons-material/SendOutlined';
 import Face from '@mui/icons-material/Face';
 import BookmarkBorderRoundedIcon from '@mui/icons-material/BookmarkBorderRounded';
-
 import React, { useEffect, useState } from 'react'
+import moment from 'moment';
+import { navigate } from '@reach/router';
+
 
 
 export default function InstagramPost() {
+
     const [posts, setPosts] = useState([]);
     const [clickComt,setClickComt]= useState(false)
     const [Comments, setComments] = useState([]);
     const [loaded, setLoaded] = useState(false);
     const [loaded1, setLoaded1] = useState(false);
+    const [liked, setLiked] = useState(false);
     const [postid, setPostId] = useState('');
     const [comment, setComment] = useState('');
     const [user_id, setUserId] = useState('');
     var data = JSON.parse(sessionStorage.getItem('user'))
+
+    const handleLike = (e) => {
+      !e.liked?
+      axios.put('http://localhost:8000/api/Post/' + e._id, { 'like': e.like + 1,'liked':true })
+          .then(res => {
+            setPosts({ ...posts, like: e.like + 1 })
+              // console.log(e.like)
+              // navigate('/home') 
+              
+          }
+
+          ): axios.put('http://localhost:8000/api/Post/' + e._id, { 'like': e.like - 1 ,'liked':false})
+          .then(res => {
+            setPosts({ ...posts, like: e.like - 1 })
+              // console.log(e.like)
+              // navigate('/home') 
+              
+          })
+  }
+
     useEffect(() => {
         axios.get('http://localhost:8000/api/Posts')
           .then(res => setPosts(res.data));
@@ -41,10 +65,10 @@ export default function InstagramPost() {
           .then(res => setComments(res.data));
     
         setLoaded1(true)
-      }, [Comments])
+      }, [comment])
       const handleSubmit = (post_idx) => (e) => {
         e.preventDefault();
-        console.log(post_idx)
+        // console.log(post_idx)
     
     
         var data = JSON.parse(sessionStorage.getItem('user'))
@@ -65,22 +89,27 @@ export default function InstagramPost() {
       }
 
     const clicktoshow = (post) => {
-
         axios.put('http://localhost:8000/api/Post/' + post._id, { "showCommand":post.showCommand?'false':'true'  })
           .then(res => {
             console.log(res)
           })
       } 
+      
 return (
     <div>
 
     {loaded && posts.map((post, idx) => {
+      const date = post.createdAt;
         return (
             <Card
-      variant="outlined"
+      
       sx={{
         width: '45%',
         margin:'0 auto',
+        marginBottom:'1em',
+        marginTop:'1em',
+        backgroundColor:'#d6dae142',
+        boxShadow:'rgba(0, 0, 0, 0.24) 0px 3px 8px',
         '--Card-radius': (theme) => theme.vars.radius.xs,
       }}
     >
@@ -115,16 +144,19 @@ return (
       </Box>
       <CardOverflow>
         <AspectRatio>
-          <img src={`http://localhost:8000/${post.photo}`} alt="" loading="lazy"  style={{width:'80%', marginLeft:'10%'}} />
+          <img src={`http://localhost:8000/${post.photo}`} alt="" loading="lazy"  style={{width:'80%', height:'80%', marginLeft:'10%'}} />
         </AspectRatio>
       </CardOverflow>
       <Box sx={{ display: 'flex', alignItems: 'center', mx: -1, my: 1 }}>
         <Box sx={{ width: 0, display: 'flex', gap: 0.5 }}>
-          <IconButton variant="plain" color="neutral" size="sm">
-            <FavoriteBorder />
+
+          <IconButton variant="plain" color="neutral" size="sm" onClick={() => handleLike(post)} >
+            {post.liked?<FavoriteBorder color='error' style={{backgroundColor:post.liked}}  />:
+            <FavoriteBorder style={{backgroundColor:post.liked}}  />}
           </IconButton>
+
           <IconButton variant="plain" color="neutral" size="sm">
-            <ModeCommentOutlined onClick={(e)=>clicktoshow(post)} />
+            <ModeCommentOutlined onMouseOver={{backgroundColor:'red'}} onClick={(e)=>clicktoshow(post)} />
           </IconButton>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mx: 'auto' }}>
@@ -143,15 +175,9 @@ return (
         <Box sx={{ width: 0, display: 'flex', flexDirection: 'row-reverse' }}>
         </Box>
       </Box>
-      <Link
-        component="button"
-        underline="none"
-        fontSize="sm"
-        fontWeight="lg"
-        textColor="text.primary"
-      >
-        8.1M Likes
-      </Link>
+      
+        <p style={{marginRight:'32.5em'}}>{post.like} <span style={{color:'#d32f2f'}}>Likes</span>  </p>
+     
       <Typography fontSize="sm">
         <Link
           component="button"
@@ -176,14 +202,9 @@ return (
          )
       })}</>:''
       }
-      <Link
-        component="button"
-        underline="none"
-        fontSize="10px"
-        sx={{ color: 'text.tertiary', my: 0.5 }}
-      >
-        2 DAYS AGO
-      </Link>
+        
+        <p>{moment(post.createdAt).format("DD/MM/YYYY")}</p>
+ 
       <CardOverflow sx={{ p: 'var(--Card-padding)', display: 'flex' }}>
         <IconButton size="sm" variant="plain" color="neutral" sx={{ ml: -1 }}>
           <Face />
@@ -202,13 +223,13 @@ onChange={((e) => setComment(e.target.value))}
 
           variant="plain"
           size="sm"
-          placeholder="Add a comment…"
+          placeHolder="Add a comment…"
           sx={{ flexGrow: 1, mr: 1, '--Input-focusedThickness': '0px' }}
         />
 
 <input type="hidden" name="post_id" value={post._id} onChange={(e) => setPostId(e.target.value)} />
 <input
-  type="submit" value="Post"  style={ {color:'blue' ,backgroundColor:'white',border:"0px"}}
+  type="submit" value="Comment"  style={ {color:'blue' ,backgroundColor:'inherit',border:"0px"}}
 />
   </div>
 {/* <Link underline="none" role="button" type="submit">
@@ -219,9 +240,10 @@ onChange={((e) => setComment(e.target.value))}
       </CardOverflow>
     </Card>
             );
-        })
+            })
 }
         </div>
 )
+
 
 }
