@@ -15,6 +15,7 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import MailIcon from '@mui/icons-material/Mail';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
+import { navigate } from '@reach/router';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -62,9 +63,12 @@ export default function PrimarySearchAppBar() {
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-
+  
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
+    var data = JSON.parse(sessionStorage.getItem('user'))
+
+    navigate(`/profile/${data.user._id}`)
   };
 
   const handleMobileMenuClose = () => {
