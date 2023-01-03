@@ -15,6 +15,8 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import MailIcon from '@mui/icons-material/Mail';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
+import useLogout from '../hooks/useLogout';
+
 import { navigate } from '@reach/router';
 
 const Search = styled('div')(({ theme }) => ({
@@ -76,6 +78,11 @@ export default function PrimarySearchAppBar() {
   };
 
   const handleMenuClose = () => {
+    sessionStorage.removeItem('user')
+    navigate('/login')
+  };
+
+  const handleMenuClose2 = () => {
     setAnchorEl(null);
     handleMobileMenuClose();
   };
@@ -101,8 +108,8 @@ export default function PrimarySearchAppBar() {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+      <MenuItem onClick={handleMenuClose2}>Profile</MenuItem>
+      <MenuItem onClick={handleMenuClose}>Sign Out</MenuItem>
     </Menu>
   );
 
