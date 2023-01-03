@@ -2,6 +2,9 @@
 // import * as React from 'react';
 import axios from 'axios';
 
+import moment from 'moment';
+import { navigate } from '@reach/router';
+
 import AspectRatio from '@mui/joy/AspectRatio';
 import Avatar from '@mui/joy/Avatar';
 import Box from '@mui/joy/Box';
@@ -19,11 +22,12 @@ import Face from '@mui/icons-material/Face';
 import BookmarkBorderRoundedIcon from '@mui/icons-material/BookmarkBorderRounded';
 
 import React, { useEffect, useState } from 'react'
-import { navigate } from '@reach/router';
+
 
 
 export default function InstagramPost() {
   const [posts, setPosts] = useState([]);
+  const [flag, setFlag] = useState(0);
   const [clickComt, setClickComt] = useState(false)
   const [Comments, setComments] = useState([]);
   const [loaded, setLoaded] = useState(false);
@@ -32,6 +36,44 @@ export default function InstagramPost() {
   const [comment, setComment] = useState('');
   const [user_id, setUserId] = useState('');
   var data = JSON.parse(sessionStorage.getItem('user'))
+
+  const handleLike = (e) => {
+    
+    for (let i = 0; i < data.user.postlike.length; i++) {
+      if (e === data.user.postlike[i]) {
+        setFlag(1)
+      }
+    }
+    if (flag ===1) {
+      axios.put('http://localhost:8000/api/Post/' + e._id, { 'like': e.like - 1 })
+      console.log("it's found")
+      console.log("it's found")
+      data.user.postlike.pull(e)
+    }else { 
+      // axios.put('http://localhost:8000/api/user/' + e._id, { 'postlike': [...data.user.postlike,e] })
+      axios.put('http://localhost:8000/api/Post/' + e._id, { 'like': e.like + 1 })
+      console.log("it's not found")
+      data.user.postlike.push(e)
+      console.log(data.user.postlike)
+      console.log(data.user.postlike.length)
+      }
+    
+        
+        } 
+    // if(data.user.liked){
+    //   axios.put('http://localhost:8000/api/user/' + data.user._id, { 'liked': true})
+    
+    //     .then(console.log(data.user.liked))
+        
+    //  }
+    //   else{axios.put('http://localhost:8000/api/user/' + data.user._id, { 'liked': false})
+        
+    //     .then(console.log(data.user.liked))
+    //     } 
+
+
+
+
   useEffect(() => {
     axios.get('http://localhost:8000/api/Posts')
       .then(res => setPosts(res.data));
@@ -125,9 +167,10 @@ export default function InstagramPost() {
               </CardOverflow>
               <Box sx={{ display: 'flex', alignItems: 'center', mx: -1, my: 1 }}>
                 <Box sx={{ width: 0, display: 'flex', gap: 0.5 }}>
-                  <IconButton variant="plain" color="neutral" size="sm">
-                    <FavoriteBorder />
-                  </IconButton>
+                <IconButton variant="plain" color="neutral" size="sm" onClick={() => handleLike(post)} >
+            {post.liked?<FavoriteBorder color='error' style={{backgroundColor:post.liked}}  />:
+            <FavoriteBorder style={{backgroundColor:post.liked}}  />}
+          </IconButton>
                   <IconButton variant="plain" color="neutral" size="sm">
                     <ModeCommentOutlined onClick={(e) => clicktoshow(post)} />
                   </IconButton>
@@ -155,7 +198,8 @@ export default function InstagramPost() {
                 fontWeight="lg"
                 textColor="text.primary"
               >
-                8.1M Likes
+                        <p style={{marginRight:'32.5em'}}>{post.like} <span style={{color:'#d32f2f'}}>Likes</span>  </p>
+
               </Link>
               <Typography fontSize="sm">
                 <Link
@@ -187,7 +231,7 @@ export default function InstagramPost() {
                 fontSize="10px"
                 sx={{ color: 'text.tertiary', my: 0.5 }}
               >
-                2 DAYS AGO
+                <p>{moment(post.createdAt).format("DD/MM/YYYY")}</p>
               </Link>
               <CardOverflow sx={{ p: 'var(--Card-padding)', display: 'flex' }}>
                 <IconButton size="sm" variant="plain" color="neutral" sx={{ ml: -1 }}>
