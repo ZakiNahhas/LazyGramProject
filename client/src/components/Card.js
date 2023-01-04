@@ -3,6 +3,7 @@
 import axios from 'axios';
 import moment from 'moment';
 import { navigate } from '@reach/router';
+
 import AspectRatio from '@mui/joy/AspectRatio';
 import Avatar from '@mui/joy/Avatar';
 import Box from '@mui/joy/Box';
@@ -38,14 +39,13 @@ export default function InstagramPost() {
   const handleLike = (e) => {
     
     for (let i = 0; i < data.user.postlike.length; i++) {
-      if (e == data.user.postlike[i]) {
+      if (e === data.user.postlike[i]) {
         setFlag(1)
       }
     }
     if (flag ===1) {
       axios.put('http://localhost:8000/api/Post/' + e._id, { 'like': e.like - 1 })
       console.log("it's found")
-      
       data.user.postlike.pull(e)
     }else { 
       // axios.put('http://localhost:8000/api/user/' + e._id, { 'postlike': [...data.user.postlike,e] })
@@ -169,7 +169,7 @@ export default function InstagramPost() {
               <Box sx={{ display: 'flex', alignItems: 'center', mx: -1, my: 1 }}>
                 <Box sx={{ width: 0, display: 'flex', gap: 0.5 }}>
                 <IconButton variant="plain" color="neutral" size="sm" onClick={() => handleLike(post)} >
-                
+
             {post.liked?<FavoriteBorder color='error' style={{backgroundColor:post.liked}}  />:
             <FavoriteBorder style={{backgroundColor:post.liked}}  />}
           </IconButton>
@@ -201,6 +201,7 @@ export default function InstagramPost() {
                 textColor="text.primary"
               >
                         <p style={{marginRight:'32.5em'}}>{post.like} <span style={{color:'#d32f2f'}}>Likes</span>  </p>
+
               </Link>
               <hr></hr>
               <Typography fontSize="sm">
