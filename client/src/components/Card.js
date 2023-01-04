@@ -1,7 +1,6 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 // import * as React from 'react';
 import axios from 'axios';
-
 import moment from 'moment';
 import { navigate } from '@reach/router';
 
@@ -22,7 +21,7 @@ import Face from '@mui/icons-material/Face';
 import BookmarkBorderRoundedIcon from '@mui/icons-material/BookmarkBorderRounded';
 
 import React, { useEffect, useState } from 'react'
-
+import { List, ListItem } from '@mui/material';
 
 
 export default function InstagramPost() {
@@ -46,7 +45,6 @@ export default function InstagramPost() {
     }
     if (flag ===1) {
       axios.put('http://localhost:8000/api/Post/' + e._id, { 'like': e.like - 1 })
-      console.log("it's found")
       console.log("it's found")
       data.user.postlike.pull(e)
     }else { 
@@ -128,6 +126,9 @@ export default function InstagramPost() {
               sx={{
                 width: '45%',
                 margin: '0 auto',
+                boxShadow: 'rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px',
+                border:'none',
+                marginTop:'1em',
                 '--Card-radius': (theme) => theme.vars.radius.xs,
               }}
             >
@@ -152,22 +153,23 @@ export default function InstagramPost() {
                   <Avatar
                     size="sm"
                     src="/static/logo.png"
-                    sx={{ p: 0.5, border: '2px solid', borderColor: 'background.body' }}  onClick={()=>profile(post.user_id._id)}
+                    sx={{ p: 0.5, border: '2px solid', borderColor: 'background.body', cursor:'pointer' }}  onClick={()=>profile(post.user_id._id)}
                   />
                 </Box>
-                <Typography onClick={()=>profile(post.user_id._id)} fontWeight="lg">{post.user_id.firstName}</Typography>
+                <Typography style={{cursor:'pointer'}} onClick={()=>profile(post.user_id._id)} fontWeight="lg">{post.user_id.firstName}</Typography>
                 <IconButton variant="plain" color="neutral" size="sm" sx={{ ml: 'auto' }}>
                   <p>...</p>
                 </IconButton>
               </Box>
               <CardOverflow>
-                <AspectRatio>
-                  <img src={`http://localhost:8000/${post.photo}`} alt="" loading="lazy" style={{ width: '80%', marginLeft: '10%' }} />
+                <AspectRatio style={{height:'22em'}}>
+                  <img src={`http://localhost:8000/${post.photo}`} alt="" loading="lazy" style={{height:'100%'}} />
                 </AspectRatio>
               </CardOverflow>
               <Box sx={{ display: 'flex', alignItems: 'center', mx: -1, my: 1 }}>
                 <Box sx={{ width: 0, display: 'flex', gap: 0.5 }}>
                 <IconButton variant="plain" color="neutral" size="sm" onClick={() => handleLike(post)} >
+
             {post.liked?<FavoriteBorder color='error' style={{backgroundColor:post.liked}}  />:
             <FavoriteBorder style={{backgroundColor:post.liked}}  />}
           </IconButton>
@@ -201,6 +203,7 @@ export default function InstagramPost() {
                         <p style={{marginRight:'32.5em'}}>{post.like} <span style={{color:'#d32f2f'}}>Likes</span>  </p>
 
               </Link>
+              <hr></hr>
               <Typography fontSize="sm">
                 <Link
                   component="button"
@@ -210,8 +213,9 @@ export default function InstagramPost() {
                 >
 
                 </Link>{' '}
-                says {post.content}
+                <p style={{color:'white',boxShadow: 'rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px', borderRadius:'4px',height:'5em',wordWrap: 'break-word',padding:'3px', textAlign:'justify',width:'45%',margin:'0 auto',background: 'rgb(176,22,173)', background: 'linear-gradient(90deg, rgba(176,22,173,.85) 0%,rgba(255,96,0,1) 100%, rgba(219,4,184,1) 35% )'}}>{post.user_id.firstName}: {post.content}</p>
               </Typography>
+              <hr></hr>
 
               {post.showCommand == true ? <>
                 {loaded1 && Comments.map((comment, idx) => {
@@ -219,8 +223,7 @@ export default function InstagramPost() {
                     <div>
                       {comment.post_id == post._id ?
                         <>
-
-                          <p>{comment.user_id.firstName} say</p> <p>{comment.comment}</p></> : ''}
+                          <p style={{width:'24%',marginBottom:'7px',backgroundColor:'#ff5600c9', borderRadius:'4px'}}>{comment.user_id.firstName} </p> <div style={{boxShadow: 'rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px',width:'45%',height:'5em', wordWrap: 'break-word',padding:'3px', textAlign:'justify',backgroundColor:'#890189bd', borderRadius:'4px'}}>{comment.comment}</div></> : ''}
                     </div>
                   )
                 })}</> : ''
