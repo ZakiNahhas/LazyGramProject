@@ -162,10 +162,11 @@ export default function InstagramPost() {
                 </IconButton>
               </Box>
               <CardOverflow>
-                <AspectRatio style={{height:'22em'}}>
+                <AspectRatio style={{height:'20em'}}>
                   <img src={`http://localhost:8000/${post.photo}`} alt="" loading="lazy" style={{height:'100%'}} />
                 </AspectRatio>
               </CardOverflow>
+              
               <Box sx={{ display: 'flex', alignItems: 'center', mx: -1, my: 1 }}>
                 <Box sx={{ width: 0, display: 'flex', gap: 0.5 }}>
                 <IconButton variant="plain" color="neutral" size="sm" onClick={() => handleLike(post)} >

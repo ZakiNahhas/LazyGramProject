@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useState } from 'react';
 import { styled, alpha } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -16,8 +17,11 @@ import MailIcon from '@mui/icons-material/Mail';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import useLogout from '../hooks/useLogout';
-
-import { navigate } from '@reach/router';
+import Modal from '@material-ui/core/Modal';
+import { makeStyles } from '@material-ui/core/styles';
+import Backdrop from '@material-ui/core/Backdrop';
+import Fade from '@material-ui/core/Fade';
+import { Link, navigate } from '@reach/router';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -58,14 +62,55 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     },
   },
 }));
-
+const useStyles = makeStyles((theme) => ({
+  modal: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  paper: {
+    backgroundColor: theme.palette.background.paper,
+    border: '2px solid #000',
+    boxShadow: theme.shadows[5],
+    padding: theme.spacing(2, 4, 3),
+  },
+}));
 export default function PrimarySearchAppBar() {
+  const classes = useStyles();
+  const [open, setOpen] = React.useState(false);
+  const [search,setSearch]=useState('')
+  const [userDetails,setUserDetails] = useState([])
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
   
+
+  const findUsers = (query)=>{
+    setSearch(query)
+    fetch('http://localhost:8000/api/search/user',{
+      method:"post",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({
+        query
+      })
+    }).then(res=>res.json())
+    .then(results=>{
+      setUserDetails(results.user)
+    })
+ }
+
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
     var data = JSON.parse(sessionStorage.getItem('user'))
@@ -186,9 +231,9 @@ export default function PrimarySearchAppBar() {
           >
             LazyGram
           </Typography>
-          <Search>
-            <SearchIconWrapper>
-              <SearchIcon />
+          <Search onClick={handleOpen}>
+            <SearchIconWrapper >
+              <SearchIcon/>
             </SearchIconWrapper>
             <StyledInputBase
               placeholder="Search…"
@@ -239,6 +284,31 @@ export default function PrimarySearchAppBar() {
       </AppBar>
       {renderMobileMenu}
       {renderMenu}
+      <Modal
+        aria-labelledby="transition-modal-title"
+        aria-describedby="transition-modal-description"
+        className={classes.modal}
+        open={open}
+        onClose={handleClose}
+        closeAfterTransition
+        BackdropComponent={Backdrop}
+        BackdropProps={{
+          timeout: 500,
+        }}
+      >
+        <Fade in={open}>
+          <div className={classes.paper}>
+            <h2 id="transition-modal-title">Search Users</h2>
+            <input  type="text" onChange={(e)=>findUsers(e.target.value)} value={search} placeholder="Search"/>
+            <ul className="collection">
+               {userDetails.map(item=>{
+                 return <><li className="collection-item"><Link to={`/profile/${item._id}`}>{item.firstName} {item.lastName}</Link></li></>
+                })}
+               
+              </ul>
+          </div>
+        </Fade>
+      </Modal>
     </Box>
   );
 }
